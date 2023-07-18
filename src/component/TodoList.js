@@ -1,9 +1,13 @@
 import "./TodoList.css";
 import TodoItem from "./TodoItem";
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
+import { TodoStateContext } from "../App";
 
-const TodoList = ({ todo, onUpdate, onDelete }) => {
-  const analyzeTodo = useMemo(() => { // 이 useMemo는 todo값이 변할 때만 첫 번째 인수로 전달한 콜백 함수를 호출하고 결과값을 반환합니다.
+const TodoList = () => {
+  const todo = useContext(TodoStateContext);
+
+  // 이 useMemo는 todo값이 변할 때만 첫 번째 인수로 전달한 콜백 함수를 호출하고 결과값을 반환합니다.
+  const analyzeTodo = useMemo(() => { 
     console.log("analyzeTodo 함수 호출");
     const totalCount = todo.length;
     const doneCount = todo.filter((it) => it.isDone).length;
@@ -15,6 +19,7 @@ const TodoList = ({ todo, onUpdate, onDelete }) => {
       notDoneCount,
     };
   }, [todo]);
+
   const { totalCount, doneCount, notDoneCount } = analyzeTodo;  // useMemo는 함수가 아닌 값을 반환하므로 analyzeTodo로 변경해야 합니다.
 
   const [search, setSearch] = useState("");
@@ -42,11 +47,15 @@ const TodoList = ({ todo, onUpdate, onDelete }) => {
         placehodler="검색어를 입력하세요" />
       <div className="list_wrapper">
         {getSearchResult().map((it) => (
-          <TodoItem key={it.id} {...it} onUpdate={onUpdate} onDelete={onDelete} />
+          <TodoItem key={it.id} {...it} />
         ))}
       </div>
     </div>
   );
-}
+};
+
+TodoList.defaultProps = {
+  todo: [],
+};
 
 export default TodoList;
